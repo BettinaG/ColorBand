@@ -9,11 +9,24 @@ public:
     VideoProcessor();
     ~VideoProcessor();
     int startCamera();
-    cv::Mat getColorFromFrame(cv::Mat input);
+
+
+    int showTestImage();
+    std::vector<int> getColoredAreas(cv::Mat input, int color);
+    std::vector<int> getDominantColor(std::vector<int> red, std::vector<int> blue, std::vector<int> green, int amountOfElements);
+
+    cv::Mat getColorFromFrame(cv::Mat input, int color);
+    cv::Mat getCleanArea(cv::Mat input);
+
+    cv::Scalar getUpperBorder(int baseColor);
+    cv::Scalar getLowerBorder(int baseColor);
 
 private:
-    cv::Mat referenceFrame, hsvPlanes;
+    const int red = 359;
+    const int blue = 205;
+    const int green = 115;
 
+    std::vector<int> redResult, blueResult, greenResult;
 };
 
 #endif // VIDEOPROZESSOR_H
