@@ -2,6 +2,8 @@
 #define VIDEOPROZESSOR_H
 
 #include <opencv2/opencv.hpp>
+#include <../drumstick/midioutput.h>
+#include <../drumstick/midiinput.h>
 
 class VideoProcessor
 {
@@ -22,11 +24,15 @@ public:
     cv::Scalar getLowerBorder(int baseColor);
 
 private:
-    const int red = 359;
+    const int minSize = 1000;
+    const int red = 350;
     const int blue = 205;
-    const int green = 115;
+    const int green = 135;
 
     std::vector<int> redResult, blueResult, greenResult;
+
+    drumstick::rt::MIDIOutput midiOutput;
+    int midichannel;
 };
 
 #endif // VIDEOPROZESSOR_H

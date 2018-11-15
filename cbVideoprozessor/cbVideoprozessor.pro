@@ -7,14 +7,17 @@ QT -= gui
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+TARGET = VideoProzessor
 
 INCLUDEPATH += $$(OPENCV_DIR)\include
 LIBS += $$(OPENCV_DIR)\bin\libopencv_*.dll
 
 
-SOURCES += \
-        main.cpp \
-    videoprozessor.cpp
+SOURCES +=  main.cpp \
+        videoprozessor.cpp \
 
-HEADERS += \
-    videoprozessor.h
+
+HEADERS += videoprozessor.h \
+
+
+include(../drumstick/drumstick.pro)

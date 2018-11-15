@@ -1,0 +1,15 @@
+INPUT(
+./debug\main.o
+./debug\videoprozessor.o
+./debug\midicontroller.o
+./debug\maccommon.o
+./debug\macmidiinput.o
+./debug\macmidioutput.o
+./debug\winmidiinput.o
+./debug\winmidioutput.o
+./debug\maccommon.o
+./debug\macmidiinput.o
+./debug\macmidioutput.o
+./debug\winmidiinput.o
+./debug\winmidioutput.o
+);
