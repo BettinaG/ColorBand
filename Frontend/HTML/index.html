@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../CSS/stylesheet.css"/>
+    <script type="text/javascript" src="../JS/midi.js"></script>
+    <title>Color Band</title>
+  </head>
+  <body>
+    <!-- Title -->
+    <h1 id="title">Color Band - AVPRG Projekt</h1>
+    <!-- Buttons -->
+    <div id="buttons">
+        <button class="button" id="save" onclick="saveFrequencyAndGain()">Instrument Speichern</button>
+        <br>
+        <button class="button" id="reset" onclick="reset()">Reset</button>
+        <br>
+        <button class="button" id="back" onclick="back()">Schritt zurück</button>
+    </div>
+    <!-- Video -->
+    <!-- Muss mit Videobild ausgetauscht werden.  -->
+    <div id="video">
+        <canvas id="meinRechteckCanvas"></canvas>
+    </div>
+    <div id="instrument">
+            <p>Instrument</p>
+        </div>
+    <!-- Filter Hinweise -->
+    <script type="text/javascript" src="../JS/functions.js"></script>
+    <button onclick="test()">Play Me</button>
+    <div>
+      <a class="mute">Mute</a>
+    </div>
+    <input type="range" min="0" max="100" value="100" class="slider" id="gainSlider"> 
+    <script type="text/javascript" src="../JS/webAudioScript.js"></script>
+    <div onload="initialize()"></div>
+  </body>
+</html>
