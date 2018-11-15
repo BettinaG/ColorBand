@@ -1,8 +1,7 @@
 if (navigator.requestMIDIAccess) {
 	console.log('This browser supports WebMIDI!');
-	navigator.requestMIDIAccess()
+	navigator.requestMIDIAccess( { sysex: true } )
     .then(onMIDISuccess, onMIDIFailure);
-
 function onMIDISuccess(midiAccess) {
     console.log(midiAccess);
 	
