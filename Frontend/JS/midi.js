@@ -5,13 +5,18 @@ if (navigator.requestMIDIAccess) {
 
 function onMIDISuccess(midiAccess) {
     console.log(midiAccess);
-
+	
+	for (var input of midiAccess.inputs.values())
+        input.onmidimessage = getMIDIMessage;
     var inputs = midiAccess.inputs;
     var outputs = midiAccess.outputs;
 }
 
 function onMIDIFailure() {
     console.log('Could not access your MIDI devices.');
+}
+function getMIDIMessage(midiMessage) {
+    console.log(midiMessage);
 }
 
 } else {
