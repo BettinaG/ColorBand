@@ -16,6 +16,21 @@ function onMIDIFailure() {
 }
 function getMIDIMessage(midiMessage) {
     console.log(midiMessage);
+
+    var startBit = midiMessage.data[0];
+    var color = midiMessage.data[1];
+    var xCoord3 = midiMessage.data[2];
+    var yCoord3 = midiMessage.data[3];
+    var endBit = midiMessage.data[4];
+
+    switch(color){
+        case 2: //blau
+            console.log('ES IST BLAU!!!!!!');
+
+            break;
+        case 0: //nichts
+            console.log('NICHTS :(');
+    }
 }
 
 } else {
