@@ -38,37 +38,39 @@ int VideoProcessor::startCamera(){
         */
        vector<int> results = getDominantColor(redResult, blueResult, greenResult, 3);
 
-
        qDebug() << "size: " << results[0] << "  x: " << results[1] << "y: " << results[2] << "color: " << results[3];
 
-       Point xy(34,1);
+       // set color code for MIDI transmission
+       int colorCode = 0;
 
+       switch (results[3]) {
+           case 350: colorCode = 1;     // red = 1
+                     break;
+           case 205: colorCode = 2;     // blue = 2
+                     break;
+           case 135: colorCode = 3;     // green = 3;
+                     break;
+       }
 
-       QByteArray data;
-
+       QByteArray data;         //Array for MIDI transmission
        data.resize(5);
 
-       data[0] = 0xf0;	//start byte
-       data[1] = (int)(results[1]/3);
-       data[2] = (int)(results[2]/3);
-       data[3] = results[3];
-
-       data[4] = 0xf7; //end byte
+       data[0] = 0xf0;          //start byte
+       data[1] = colorCode;     //color code
+       data[2] = results[1]/3;  //x-coordinates
+       data[3] = results[2]/3;  //y-coordinates      coordinates divided by 3 because biggest allowed value is 0xef (239)
+       data[4] = 0xf7;          //end byte
 
        midiOutput.sendSysex(data);
 
-    qDebug() << data;
 
-
-
-
-
+       /*
+        * This is to view the camera frame
+        * for testing purposses only
+        */
         frame = getColorFromFrame(frame, results[3]);
         frame = getCleanArea(frame);
-
         flip(frame, frame, 1);
-
-
 
         imshow("camera",frame);
         if(waitKey(1) == 27){
@@ -77,7 +79,11 @@ int VideoProcessor::startCamera(){
     }
 }
 
-
+/*
+ *  This function finds the biggest area of a certain color
+ *  It only returns a valid vector if the biggest area has a certain size
+ *  else it fills the vector with only zeroes
+ */
 
 std::vector<int> VideoProcessor::getColoredAreas(cv::Mat input, int color){
 
@@ -138,6 +144,10 @@ std::vector<int> VideoProcessor::getColoredAreas(cv::Mat input, int color){
     }
 }
 
+/*
+ *  This function finds the biggest (most dominant) of the colored areas
+ */
+
 std::vector<int> VideoProcessor::getDominantColor(vector<int> red, vector<int> blue, vector<int> green, int amountOfElements){
 
     vector<vector<int>> inputVecs(amountOfElements);
@@ -164,6 +174,9 @@ std::vector<int> VideoProcessor::getDominantColor(vector<int> red, vector<int> b
     return results;
 }
 
+/*
+ *  These two function calculate the upper/lower border for the inRange function (see getColoredArea)
+ */
 
 Scalar VideoProcessor::getUpperBorder(int baseColor){
 
@@ -179,7 +192,12 @@ Scalar VideoProcessor::getLowerBorder(int baseColor){
 
 
 
-
+/*
+ * The following two functions are for testing purposses only
+ * they create the camera image that shows visually
+ * what the other functions calculate in numbers only
+ *
+ */
 
 cv::Mat VideoProcessor::getColorFromFrame(cv::Mat input, int color){
 
@@ -193,16 +211,6 @@ cv::Mat VideoProcessor::getColorFromFrame(cv::Mat input, int color){
      Mat output(input.rows, input.cols, CV_8UC1);
 
     inRange(hsv, getLowerBorder(color), getUpperBorder(color), coloredArea);
-
-
-    //cvtColor(blueArea, blueArea2, CV_HSV2BGR);
-
-    //absdiff(blueArea2, input, blueArea2);
-
-    //target = cv2.bitwise_and(img,img, mask=mask)
-
-//    bitwise_and(input, input, output, blueArea);
-
 
     return coloredArea;
 }
@@ -235,35 +243,4 @@ cv::Mat VideoProcessor::getCleanArea(cv::Mat input){
     }
 
     return output;
-}
-
-int VideoProcessor::showTestImage(){
-    Mat image;
-        image = imread("../testDot.png", CV_LOAD_IMAGE_COLOR);
-
-    if (!image.data){
-        cout << "Could not open or find the image" << std::endl;
-        return -1;
-    }
-
-        // Create a new matrix to hold the HSV image
-            Mat HSV, output;
-
-        // convert RGB image to HSV
-            cvtColor(image, HSV, CV_BGR2HSV);
-
-            namedWindow("Display window", CV_WINDOW_AUTOSIZE);
-            imshow("Display window", image);
-
-
-//            inRange(HSV,getLowerBorder(blue), getUpperBorder(blue), output);
-
-            inRange(HSV, getLowerBorder(red), getUpperBorder(red), output);
-
-
-            imshow("Result window", output);
-
-            waitKey(0);
-            return 0;
-
 }
