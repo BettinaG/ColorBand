@@ -1,8 +1,14 @@
 var context = new AudioContext();
-var source1, source2, source3;
-var sourceBuffers = [source1, source2, source3];
-var i = 0;
-var drumpads = document.getElementsByClassName("drumpad");
+var sound1 = new Audio("../Sounds/aGuitar.wav");
+var sound2 = new Audio("../Sounds/bass.wav");
+var sound3 = new Audio("../Sounds/cello.wav");
+var sound4 = new Audio("../Sounds/drums.wav");
+var soundNode = context.createMediaElementSource(sound1);
+var gainNode = context.createGain();
+gainNode.gain.value = 0.8;
+soundNode.connect(gainNode);
+gainNode.connect(context.destination);
+
 
 if (navigator.requestMIDIAccess) {
 	console.log('This browser supports WebMIDI!');
@@ -15,6 +21,14 @@ function onMIDISuccess(midiAccess) {
         input.onmidimessage = getMIDIMessage;
     var inputs = midiAccess.inputs;
     var outputs = midiAccess.outputs;
+    sound4.play();
+    sound4.loop = true;
+    sound3.play();
+    sound3.loop = true;
+    sound2.play();
+    sound2.loop = true;
+    sound1.play();
+    sound1.loop = true;
 }
 
 function onMIDIFailure() {
@@ -38,35 +52,13 @@ function getMIDIMessage(midiMessage) {
     //     gainNode.gain.setValueAtTime(xCoord, audioContext.currentTime);
     // }
 
-    for (let i = 0; i < drumpads.length; i++) {
-        getData(i);
-        drumpads[i].addEventListener("mousedown", function (e) {playSound(i)});
-    }
-
-    function getData(color){
-        var request = new XMLHttpRequest();
-        request.open('GET, "../sounds/sound"+ (color + 1) + ".wav", true');
-        request.responseType = 'arraybuffer';
-        request.onload = function (){
-            var undecodedAudio = request.response;
     
-            context.decodeAudioData(undecodedAudio, function (buffer){
-                sourceBuffers[color] = context.createBufferSource();
-                sourceBuffers[color].buffer = buffer;
-                sourceBuffers[color].connect(context.destination);
-            });
-        };
-        request.send();
-    }
-    function playSound(color){
-        getData(color);
-        sourceBuffers[color].start(0);
-    }
     switch(color){
         case 0: //nichts
             console.log('Keine Farbe');
             playSound(color);
             console.log(index);
+            
             break;
         case 1: //rot
             console.log('ES IST ROT!!!!!!!');
