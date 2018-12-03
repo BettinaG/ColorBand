@@ -18,7 +18,3 @@ function back(){
 confirm("Das letzte Objekt wird gelöscht!");
 console.log("BACK");
 }
-function playSound () {
-    document.getElementById('play').play();
-    document.getElementById('play').loop = true;
-}

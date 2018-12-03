@@ -1,3 +1,9 @@
+var context = new AudioContext();
+var source1, source2, source3;
+var sourceBuffers = [source1, source2, source3];
+var i = 0;
+var drumpads = document.getElementsByClassName("drumpad");
+
 if (navigator.requestMIDIAccess) {
 	console.log('This browser supports WebMIDI!');
 	navigator.requestMIDIAccess( { sysex: true } )
@@ -22,107 +28,63 @@ function getMIDIMessage(midiMessage) {
     var xCoord3 = midiMessage.data[2];
     var yCoord3 = midiMessage.data[3];
     var endBit = midiMessage.data[4];
+    var xCoord = (xCoord3 * 3);
+    var yCoord = (yCoord3 * 3);
 
+    // if(xCoord <= 3){
+    //     gainNode.gain.setValueAtTime(xCoord, audioContext.currentTime);
+    // }
+    // else{
+    //     gainNode.gain.setValueAtTime(xCoord, audioContext.currentTime);
+    // }
+
+    for (let i = 0; i < drumpads.length; i++) {
+        getData(i);
+        drumpads[i].addEventListener("mousedown", function (e) {playSound(i)});
+    }
+
+    function getData(color){
+        var request = new XMLHttpRequest();
+        request.open('GET, "../sounds/sound"+ (color + 1) + ".wav", true');
+        request.responseType = 'arraybuffer';
+        request.onload = function (){
+            var undecodedAudio = request.response;
+    
+            context.decodeAudioData(undecodedAudio, function (buffer){
+                sourceBuffers[color] = context.createBufferSource();
+                sourceBuffers[color].buffer = buffer;
+                sourceBuffers[color].connect(context.destination);
+            });
+        };
+        request.send();
+    }
+    function playSound(color){
+        getData(color);
+        sourceBuffers[color].start(0);
+    }
     switch(color){
+        case 0: //nichts
+            console.log('Keine Farbe');
+            playSound(color);
+            console.log(index);
+            break;
+        case 1: //rot
+            console.log('ES IST ROT!!!!!!!');
+            playSound(color);
+            break;
         case 2: //blau
             console.log('ES IST BLAU!!!!!!');
-
+            console.log(index);
+            playSound(color);
             break;
-        case 0: //nichts
-            console.log('NICHTS :(');
+        case 3: //grün
+            console.log('ES IST GRÜN!!!!!!');
+            playSound(color);
+            break;
+        
     }
 }
 
 } else {
 	console.log('WebMIDI is not supported in this browser.');
 }
-
-
-
-
-
-
-
-// ''function initialize(){
-// 	let midi = null;  // global MIDIAccess object
-// 	let midiInputs = [];
-// 	function onMIDISuccess( midiAccess ) {
-// 	  console.log( "MIDI ready!" );
-// 	  midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
-// 		listInputsAndOutputs(midi);
-// 	}
-
-// 	function onMIDIFailure(msg) {
-// 	  console.log( "Failed to get MIDI access - " + msg );
-// 	}
-
-// 	navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
-// 	function listInputsAndOutputs( midiAccess ) {
-// 		const inputPortSelector = document.getElementById('inputportselector');
-// 		for (let input of midiAccess.inputs.values()) {
-// 		  var opt = document.createElement("option");
-// 		  opt.text = input.name;
-// 		  document.getElementById("inputportselector").add(opt);
-// 		  midiInputs.push(input);
-// 		  console.log( "Input port [type:'" + input.type + "'] id:'" + input.id +
-// 			"' manufacturer:'" + input.manufacturer + "' name:'" + input.name +
-// 			"' version:'" + input.version + "'" );
-// 		}
-// 		if (midiInputs.length > 1){
-// 			inputPortSelector.addEventListener('click', ()=>{
-// 				selectMidiInput(inputPortSelector.selectedIndex);
-// 			});
-// 		}
-// 		selectMidiInput(inputPortSelector.selectedIndex);
-// 	}
-
-	
-// 	function selectMidiInput(index){
-// 		const selectedIndex = document.getElementById('inputportselector').selectedIndex;
-// 		const midiInput = midiInputs[selectedIndex];
-// 		midiInput.onmidimessage = MIDIMessageEventHandler;
-// 		return midiInput;
-// 	}
-// 	function MIDIMessageEventHandler(event) {
-//       // Mask off the lower nibble (MIDI channel, which we don't care about)
-//       switch (event.data[0] & 0xf0) {
-//         case 0x90:
-// 			if (event.data[2]==0) { 
-// 				noteOff(event.data[1]);
-// 			}
-// 			else{
-// 				noteOn(event.data[1], event.data[2]);
-// 			}
-// 			break;
-//         case 0x80:
-// 			noteOff(event.data[1]);
-// 			break;
-// 		case 0xB0:
-// 			controlChange(event.data[1], event.data[2]);
-// 			break;
-// 		case 0xC0:
-// 			programChange(event.data[1]);
-// 			break;
-// 		case 0xE0:
-// 			pitchbend(event.data[1], event.data[2]);
-// 			break;
-//       }
-//     }
-// 	function noteOn(noteNumber, velocity){
-// 		console.log(`note on: note=${noteNumber}, velocity = ${velocity}`);
-// 	}
-// 	function noteOff(noteNumber){
-// 		console.log(`note off: note=${noteNumber}`);
-// 	}
-// 	function controlChange(controller, value){
-// 		console.log(`control change: controller = ${controller}, value = ${value}`);
-// 	}
-// 	function programChange(program){
-// 		console.log(`program change: program=${program}`);
-// 	}
-// 	function pitchbend(value1, value2){
-// 		console.log(value1 * 128 + " " + value2);
-// 		const pitchbendValue = (value1 * 128 + value2) - 8192;
-// 		console.log(`pitch bend: value = ${pitchbendValue}`);
-// 	}
-// }''

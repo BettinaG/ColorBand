@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="../CSS/stylesheet.css"/>
+    <!-- <script type="text/javascript" src="../JS/webAudioScript.js"></script> -->
     <script type="text/javascript" src="../JS/midi.js"></script>
     <title>Color Band</title>
   </head>
@@ -23,6 +24,17 @@
     <div id="video">
         <canvas id="meinRechteckCanvas"></canvas>
     </div>
+    <!-- Test -->
+    <div id="mainContainer">
+      <!-- Dies ist der Code für die Aufgabe -->
+      <div id="div1" class="drumpad"></div>
+      <div id="div2" class="drumpad"></div>
+      <div id="div3" class="drumpad"></div>
+      <div id="div4" class="drumpad"></div>
+      <script src="soundPlayback.js"></script>
+      <!--------------------------------------->
+  </div>
+  <!-- Test ende -->
     <div id="instrument">
             <p>Instrument</p>
         </div>
@@ -33,7 +45,7 @@
       <a class="mute">Mute</a>
     </div>
     <input type="range" min="0" max="100" value="100" class="slider" id="gainSlider"> 
-    <script type="text/javascript" src="../JS/webAudioScript.js"></script>
+    <!-- <script type="text/javascript" src="../JS/webAudioScript.js"></script> -->
     <div onload="initialize()"></div>
   </body>
 </html>
