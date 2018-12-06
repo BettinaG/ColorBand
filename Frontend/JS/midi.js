@@ -70,7 +70,7 @@ if (navigator.requestMIDIAccess) {
             }
         }
 
-        for (var j = 0; j<10; j++){
+        for (var j = 0; j<15; j++){
             var y = j*30;
 
             if (yCoord > y && yCoord < y+30){
@@ -219,7 +219,6 @@ if (navigator.requestMIDIAccess) {
                 filterNode.type = "notch";
                 filterNode.detune = 0;
                 filterNode.Q = 0;
-                filterNode.frequency = 5000;
                 break;
             case 3: //grün
                 console.log('ES IST GRÜN!!!!!!');
