@@ -32,7 +32,6 @@ private:
     std::vector<int> redResult, blueResult, greenResult;
 
     drumstick::rt::MIDIOutput midiOutput;
-    int midichannel;
 };
 
 #endif // VIDEOPROZESSOR_H

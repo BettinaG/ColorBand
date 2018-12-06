@@ -9,8 +9,6 @@ using namespace drumstick::rt;
 
 VideoProcessor::VideoProcessor(){
 
-     midichannel = 1;
-
      QStringList connections = midiOutput.connections(true);
      midiOutput.open("LoopBe Internal MIDI");
 }
@@ -38,7 +36,7 @@ int VideoProcessor::startCamera(){
         */
        vector<int> results = getDominantColor(redResult, blueResult, greenResult, 3);
 
-       qDebug() << "size: " << results[0] << "  x: " << results[1] << "y: " << results[2] << "color: " << results[3];
+       qDebug() << "x: " << results[1] << "  y: " << results[2] << "  color: " << results[3];
 
        // set color code for MIDI transmission
        int colorCode = 0;
@@ -57,12 +55,11 @@ int VideoProcessor::startCamera(){
 
        data[0] = 0xf0;          //start byte
        data[1] = colorCode;     //color code
-       data[2] = results[1]/3;  //x-coordinates
-       data[3] = results[2]/3;  //y-coordinates      coordinates divided by 3 because biggest allowed value is 0xef (239)
+       data[2] = results[1]/6;  //x-coordinates
+       data[3] = results[2]/6;  //y-coordinates      coordinates divided by 6 because otherwise the values are too big
        data[4] = 0xf7;          //end byte
 
-       midiOutput.sendSysex(data);
-
+       midiOutput.sendSysex(data);  //send MIDI message
 
        /*
         * This is to view the camera frame
@@ -131,8 +128,8 @@ std::vector<int> VideoProcessor::getColoredAreas(cv::Mat input, int color){
         Point centerOfMass(m.m10/m.m00, m.m01/m.m00);
 
         output[0] = maxArea;
-        output[1] = (int)(centerOfMass.x/3);
-        output[2] = (int)(centerOfMass.y/3);
+        output[1] = (int)(centerOfMass.x);
+        output[2] = (int)(centerOfMass.y);
 
         return output;
     }
