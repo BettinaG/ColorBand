@@ -17,7 +17,9 @@ var sound15 = new Audio("../Sounds/violine.wav");
 var sounds = [sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9, sound10, sound11, sound12, sound13, sound14, sound15];
 var status;
 var soundNodes = new Array (sounds.length);
+var filterNode = context.createBiquadFilter();
 var gainNodes = new Array (sounds.length);
+
 // var soundNode = context.createMediaElementSource(sound1);
 var myGain;
 // var gainNode = context.createGain();
@@ -31,7 +33,8 @@ var myGain;
 for (var i = 0; i < sounds.length; i++){
     soundNodes[i] = context.createMediaElementSource(sounds[i]);
     gainNodes[i] = context.createGain();
-    soundNodes[i].connect(gainNodes[i]);
+    soundNodes[i].connect(filterNode);
+    filterNode.connect(gainNodes[i]);
     gainNodes[i].connect(context.destination);
 }
 if (navigator.requestMIDIAccess) {
@@ -207,14 +210,21 @@ if (navigator.requestMIDIAccess) {
                 break;
             case 1: //rot
                 console.log('ES IST ROT!!!!!!!');
+                
                 break;
             case 2: //blau
                 console.log('ES IST BLAU!!!!!!');
                 console.log(myGain);
                 console.log(yCoord);
+                filterNode.type = "notch";
+                filterNode.detune = 0;
+                filterNode.Q = 0;
+                filterNode.frequency = 5000;
                 break;
             case 3: //grün
                 console.log('ES IST GRÜN!!!!!!');
+                filterNode.type = "lowshelf";
+                filterNode.detune.value = 100;
                 break;
             
         }
