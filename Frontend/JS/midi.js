@@ -19,16 +19,12 @@ var status;
 var soundNodes = new Array (sounds.length);
 var filterNode = context.createBiquadFilter();
 var gainNodes = new Array (sounds.length);
-
-// var soundNode = context.createMediaElementSource(sound1);
 var myGain;
-// var gainNode = context.createGain();
-// soundNode.connect(gainNode);
-// gainNode.connect(context.destination);
-// var soundNode2 = context.createMediaElementSource(sound2);
-// var gainNode2 = context.createGain();
-// soundNode2.connect(gainNode2);
-// gainNode2.connect(context.destination);
+var sGain;
+var test;
+var actualSound;
+var savedSound;
+var savedSounds = new Array ();
 
 for (var i = 0; i < sounds.length; i++){
     soundNodes[i] = context.createMediaElementSource(sounds[i]);
@@ -42,7 +38,7 @@ if (navigator.requestMIDIAccess) {
 	navigator.requestMIDIAccess( { sysex: true } )
     .then(onMIDISuccess, onMIDIFailure);
     function onMIDISuccess(midiAccess) {
-        console.log(midiAccess);
+        //console.log(midiAccess);
         for (var input of midiAccess.inputs.values())
             input.onmidimessage = getMIDIMessage;
         var inputs = midiAccess.inputs;
@@ -51,183 +47,98 @@ if (navigator.requestMIDIAccess) {
     function onMIDIFailure() {
         console.log('Could not access your MIDI devices.');
     }   
+    
+    function saveSounds(){
+        myGain = sGain;
+        savedSound = actualSound;
+        savedSounds.push(savedSound);
+        console.log(actualSound);
+        console.log(savedSound);
+        console.log("Saved:" + sounds[savedSound]);
+        saveGain();
+    }
+    function saveGain(){
+    }
     function getMIDIMessage(midiMessage) {
-        console.log(midiMessage);
-
+        //console.log(midiMessage);
+        //Can be ignored
         var startBit = midiMessage.data[0];
+        //Color Value
         var color = midiMessage.data[1];
+        //X-Coord divided by 6
         var xCoord3 = midiMessage.data[2];
+        //Y-Coord divided by 6
         var yCoord3 = midiMessage.data[3];
+        //Can be ignored
         var endBit = midiMessage.data[4];
+        //X-Coord multiplied by 6
         var xCoord = (xCoord3 * 6);
+        //Y-Coord multiplied by 6
         var yCoord = (yCoord3 * 6);
-        myGain = xCoord / 600;
 
-        function pauseSounds(){
+        //Divisor needs to be adjusted by Pixelsize of camera
+        myGain =1 - (xCoord / 600);
+
+        function controlSounds(){
             for (var i = 0; i<sounds.length; i++){
-                sounds[i].pause();
-                sounds[i].currentTime = 0;
+                //console.log(myGain);
+                gainNodes[i].gain.value = myGain;
             }
         }
-
+        function pauseSounds(){
+            for (var i = 0; i<sounds.length; i++){
+                if(!savedSounds.includes(i)){
+                sounds[i].pause();
+                sounds[i].currentTime = 0;
+                }
+            }
+        }
         for (var j = 0; j<15; j++){
             var y = j*30;
 
             if (yCoord > y && yCoord < y+30){
                 status = j;
                 for (var i = 0; i < sounds.length; i++){
-                    if (i == status){         
+                    if (i == status){       
                         sounds[i].play();
                         sounds[i].loop = true;
-                    }else{
+                        actualSound = i;
+                    } else if (!savedSounds.includes(i)){
                         sounds[i].pause();
                         sounds[i].currentTime = 0;
                     }
                 }
             }
         }
-        /* if (yCoord >= 270){
-            status = 0;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (240 <= yCoord && yCoord < 270) {
-            status = 1;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (210 <= yCoord && yCoord < 240) {
-            status = 2;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (180 <= yCoord && yCoord < 210) {
-            status = 3;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (150 <= yCoord && yCoord < 180) {
-            status = 4;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (120 <= yCoord && yCoord < 150) {
-            status = 5;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (90 <= yCoord && yCoord < 120) {
-            status = 6;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (60 <= yCoord && yCoord < 90) {
-            status = 7;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else if (30 <= yCoord && yCoord < 60) {
-            status = 8;
-            for (var i = 0; i < sounds.length; i++){
-                if (i == status){         
-                    sounds[i].play();
-                    sounds[i].loop = true;
-                }else{
-                    sounds[i].pause();
-                    sounds[i].currentTime = 0;
-                }
-            }
-        }
-        else {
-            for (var i = 0; i < sounds.length; i++){
-                sounds[i].pause();
-                sounds[i].currentTime = 0;
-            }
-        } */
-
-
+        controlSounds();
         switch(color){
             case 0: //nichts
-                console.log('Keine Farbe');
+                //console.log('Keine Farbe');
                 yCoord = -1;
                 pauseSounds();
+                if (savedSounds.length > 1){
+                gainNodes[savedSound].gain.value = sGain;
+                }
                 break;
             case 1: //rot
-                console.log('ES IST ROT!!!!!!!');
-                
+                //console.log('ES IST ROT!!!!!!!');
                 break;
             case 2: //blau
-                console.log('ES IST BLAU!!!!!!');
-                console.log(myGain);
-                console.log(yCoord);
+               // console.log('ES IST BLAU!!!!!!');
+               // console.log(myGain);
+               // console.log(yCoord);
                 filterNode.type = "notch";
                 filterNode.detune = 0;
                 filterNode.Q = 0;
                 break;
             case 3: //grün
-                console.log('ES IST GRÜN!!!!!!');
+               // console.log('ES IST GRÜN!!!!!!');
                 filterNode.type = "lowshelf";
                 filterNode.detune.value = 100;
                 break;
             
         }
-}
+    }
 
 } else {
 	console.log('WebMIDI is not supported in this browser.');
