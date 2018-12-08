@@ -60,8 +60,9 @@ if (navigator.requestMIDIAccess) {
         savedSounds.splice((saveSounds.length-1), 1);
     }
     function clearSoundArray(){
+        confirm("Alles wird zurückgesetzt!");
         while(!savedSounds.length == 0){
-            savedSounds.splice((fruits.length - 1), 1);
+            savedSounds.splice((saveSounds.length - 1), 1);
         }
     }
     function saveGain(){
