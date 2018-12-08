@@ -47,7 +47,6 @@ if (navigator.requestMIDIAccess) {
     function onMIDIFailure() {
         console.log('Could not access your MIDI devices.');
     }   
-    
     function saveSounds(){
         myGain = sGain;
         savedSound = actualSound;
@@ -56,6 +55,14 @@ if (navigator.requestMIDIAccess) {
         console.log(savedSound);
         console.log("Saved:" + sounds[savedSound]);
         saveGain();
+    }
+    function revertSavedSound(){
+        savedSounds.splice((saveSounds.length-1), 1);
+    }
+    function clearSoundArray(){
+        while(!savedSounds.length == 0){
+            savedSounds.splice((fruits.length - 1), 1);
+        }
     }
     function saveGain(){
     }
@@ -95,7 +102,6 @@ if (navigator.requestMIDIAccess) {
         }
         for (var j = 0; j<15; j++){
             var y = j*30;
-
             if (yCoord > y && yCoord < y+30){
                 status = j;
                 for (var i = 0; i < sounds.length; i++){
@@ -136,10 +142,8 @@ if (navigator.requestMIDIAccess) {
                 filterNode.type = "lowshelf";
                 filterNode.detune.value = 100;
                 break;
-            
         }
     }
-
 } else {
 	console.log('WebMIDI is not supported in this browser.');
 }
