@@ -20,7 +20,7 @@ var status,
     soundNodes = new Array (sounds.length),
     filterNode = context.createBiquadFilter(),
     gainNodes = new Array (sounds.length),
-    myGain,
+    myGain = 0,
     sGain,
     test,
     currentSound,
@@ -95,7 +95,7 @@ if (navigator.requestMIDIAccess) {
         var yCoord = (yCoord3 * 6);
 
         //Divisor needs to be adjusted by Pixelsize of camera
-        myGain =1 - (xCoord / 600);
+        // myGain =1 - (xCoord / 600);
 
         function controlSounds(){
             for (var i = 0; i<sounds.length; i++){
@@ -127,8 +127,8 @@ if (navigator.requestMIDIAccess) {
                 }
             }
         }
+        
         controlSounds();
-
         switch(color){
             case 0: //nichts
                 //console.log('Keine Farbe');
@@ -138,23 +138,23 @@ if (navigator.requestMIDIAccess) {
                         gainNodes[savedSound].gain.value = sGain;
                     }
                 }
-                if (savedSounds.length > 1){
-                gainNodes[savedSound].gain.value = sGain;
-                }
                 break;
             case 1: //rot
                // console.log('rot');
                 filterNode.type = "allpass";
+                myGain =1 - (xCoord / 600);
                 break;
             case 2: //blau
                 //console.log('blau');
                // console.log(myGain);
                //console.log("Y: " + yCoord + "   X: "+ xCoord);
                 filterNode.type = "lowpass";
+                myGain =1 - (xCoord / 600);
                 break;
             case 3: //grün
                // console.log('grün');
                 filterNode.type = "highpass";
+                myGain =1 - (xCoord / 600);
                 break;
         }
 
