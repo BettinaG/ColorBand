@@ -45,15 +45,16 @@ body {
 }
 
 #instrument{
-    float: left;
+    float: right;
     writing-mode: vertical-lr; 
     text-orientation: upright; 
     font-size: 250%;
 }
 #lautstaerke{
-    float: right;
     height: 50px;
     bottom: 0;
     text-orientation: upright; 
     font-size: 250%;
+    margin-top: 29%;
+    padding-left: 41%; 
 }
