@@ -58,7 +58,7 @@ if (navigator.requestMIDIAccess) {
         console.log('Could not access your MIDI devices.');
     }   
     function saveSounds(){
-        myGain = sGain;
+        sGain = myGain;
         savedSound = currentSound;
         savedSounds.push(savedSound);
         console.log(currentSound);
@@ -133,6 +133,11 @@ if (navigator.requestMIDIAccess) {
             case 0: //nichts
                 //console.log('Keine Farbe');
                 pauseSounds();
+                for(var i=0; i<sounds.length; i++){
+                    if(savedSounds.includes(i)){
+                        gainNodes[savedSound].gain.value = sGain;
+                    }
+                }
                 if (savedSounds.length > 1){
                 gainNodes[savedSound].gain.value = sGain;
                 }
