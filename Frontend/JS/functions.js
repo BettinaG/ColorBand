@@ -27,11 +27,12 @@ function playSound(){
         if (yCoord > y && yCoord < y+30){
             let status = j;
             for (var i = 0; i < sounds.length; i++){
-                if (i == status){       
-                    soundNodes[i].connect(filterNodes[amountOfSavedElements]);
-
-                    sounds[i].play();
-                    sounds[i].loop = true;
+                if (i == status){     
+                    if(!savedSounds.includes(i)){
+                        soundNodes[i].connect(filterNodes[amountOfSavedElements]);
+                        sounds[i].play();
+                        sounds[i].loop = true;
+                    }            
                     currentSound = i;
                 } else if (!savedSounds.includes(i)){
                     sounds[i].pause();
@@ -90,6 +91,7 @@ function setFilterType(){
             colorString = "green";
             break;
     }
+    currentFilter = filterNodes[amountOfSavedElements].type;
 }
 
 //FUNCTIONS FOR SAVING/DELETING SOUNDS
@@ -100,6 +102,7 @@ function setFilterType(){
  */
 function saveSounds(){
     gainNodes[amountOfSavedElements].gain.value = currentGain;
+    filterNodes[amountOfSavedElements].type = currentFilter;
     savedSounds[amountOfSavedElements] = currentSound;
     savePosition(colorString, xCoord, yCoord, amountOfSavedElements);
 
@@ -117,6 +120,9 @@ function saveSounds(){
 function revertSavedSound(){
     savedSounds.splice((saveSounds.length-1), 1);
     savedPositions.splice((savedPositions.length - 1), 1);
+    gainNodes.splice((gainNodes.length-1), 1);
+    filterNodes.splice((filterNodes.length - 1), 1);
+    amountOfSavedElements--;
 }
 
 /*
@@ -178,14 +184,12 @@ function startPlaying(){
         initialize();
     }
 
-    playSound();
-
     setGain();
     
     setFilterType();
     
+    playSound();
+
     drawPosition(xCoord, yCoord);
     drawAllSavedPositions();
-    
-    if(gainNodes.length > 1) currentGain = gainNodes[amountOfSavedElements-1].gain.value;
 }
