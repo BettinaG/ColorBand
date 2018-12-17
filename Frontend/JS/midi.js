@@ -16,38 +16,176 @@ var context = new AudioContext(),
     sound15 = new Audio("../Sounds/violine.wav"),
     sounds = [sound1, sound2, sound3, sound4, sound5, sound6, sound7, sound8, sound9, sound10, sound11, sound12, sound13, sound14, sound15];
     
+var test = 0;
+
 var status,
+    isInitialized = false,
     soundNodes = new Array (sounds.length),
-    filterNode = context.createBiquadFilter(),
-    gainNodes = new Array (sounds.length),
-    myGain = 0,
+    currentGain = 0,
     sGain,
-    test,
     currentSound,
-    savedSound,
     savedSounds = new Array ();
 
-
-    
-var savedPositions = new Array(),
-    amountOfSavedPositions = 0,
-    colorString,
+var color,
     xCoord,
     yCoord;
 
+var amountOfSavedElements = 0,
+    filterNodes = new Array(),
+    gainNodes = new Array ();
+
+
+var savedPositions = new Array(),
+    colorString;
+
 var e = document.getElementById("meinRechteckCanvas"),
     canv = e.getContext("2d");
+        canv.width = e.width;
+        canv.height = e.height;
 
-canv.width = e.width;
-canv.height = e.height;
+
+// for (var i = 0; i < sounds.length; i++){
+//     soundNodes[i] = context.createMediaElementSource(sounds[i]);
+//     gainNodes[i] = context.createGain();
+//     soundNodes[i].connect(filterNode);
+//     filterNode.connect(gainNodes[i]);
+//     gainNodes[i].connect(context.destination);
+// }
+
+function initialize(){
+    for(let i = 0; i < sounds.length; i++){
+        soundNodes[i] = context.createMediaElementSource(sounds[i]);
+    }
+    gainNodes[0] = context.createGain();
+    filterNodes[0] = context.createBiquadFilter();
+
+    filterNodes[0].connect(gainNodes[0]);
+    gainNodes[0].connect(context.destination);
+    
+    isInitialized = true;
+}
 
 
-for (var i = 0; i < sounds.length; i++){
-    soundNodes[i] = context.createMediaElementSource(sounds[i]);
-    gainNodes[i] = context.createGain();
-    soundNodes[i].connect(filterNode);
-    filterNode.connect(gainNodes[i]);
-    gainNodes[i].connect(context.destination);
+
+function playSound(){   
+    for (var j = 0; j<15; j++){
+        var y = j*30;
+        if (yCoord > y && yCoord < y+30){
+            status = j;
+            for (var i = 0; i < sounds.length; i++){
+                if (i == status){       
+                    soundNodes[i].connect(filterNodes[amountOfSavedElements]);
+
+                    sounds[i].play();
+                    sounds[i].loop = true;
+                    currentSound = i;
+                } else if (!savedSounds.includes(i)){
+                    sounds[i].pause();
+                    sounds[i].currentTime = 0;
+                }
+            }
+        }
+    }
+    
+}
+
+function pauseSounds(){
+    for (var i = 0; i<sounds.length; i++){
+        if(!savedSounds.includes(i)){
+        sounds[i].pause();
+        sounds[i].currentTime = 0;
+        }
+    }
+}
+
+function setGain(){
+    currentGain = 1 - (xCoord/630);
+    gainNodes[amountOfSavedElements].gain.value = currentGain;
+}
+
+function setFilterType(){
+    switch(color){
+        case 0: //nichts
+            //console.log('Keine Farbe');
+            for(var i=0; i<sounds.length; i++){
+                if(savedSounds.includes(i)){
+                    gainNodes[savedSounds[amountOfSavedElements]].gain.value = gainNodes[amountOfSavedElements].gain.value;
+                }
+}
+            pauseSounds();
+            colorString = "";
+            break;
+        case 1: //rot
+           // console.log('rot');
+            filterNodes[amountOfSavedElements].type = "allpass";
+            colorString = "red";
+            break;
+        case 2: //blau
+            //console.log('blau');
+            filterNodes[amountOfSavedElements].type = "lowpass";
+            colorString = "blue";
+            break;
+        case 3: //grün
+           // console.log('grün');
+            filterNodes[amountOfSavedElements].type = "highpass";
+            colorString = "green";
+            break;
+    }
+}
+
+//FUNCTIONS FOR SAVING/DELETING SOUNDS
+
+function saveSounds(){
+    gainNodes[amountOfSavedElements].gain.value = currentGain;
+    savedSounds[amountOfSavedElements] = currentSound;
+    savePosition(colorString, xCoord, yCoord, amountOfSavedElements);
+
+    amountOfSavedElements++;
+    gainNodes[amountOfSavedElements] = context.createGain();
+    filterNodes[amountOfSavedElements] = context.createBiquadFilter();
+
+    filterNodes[amountOfSavedElements].connect(gainNodes[amountOfSavedElements]);
+    gainNodes[amountOfSavedElements].connect(context.destination);
+}
+
+function revertSavedSound(){
+    savedSounds.splice((saveSounds.length-1), 1);
+    savedPositions.splice((savedPositions.length - 1), 1);
+}
+
+function clearSoundArray(){
+    confirm("Alles wird zurückgesetzt!");
+    while(!savedSounds.length == 0){
+        savedSounds.splice((saveSounds.length - 1), 1);
+        gainNodes.splice((gainNodes.length - 1), 1);
+        filterNodes.splice((filterNodes.length - 1), 1);
+        savedPositions.splice(savedPositions.length - 1, 1);
+    }
+
+    amountOfSavedElements = 0;
+    
+    canv.clearRect(0, 0, canv.width, canv.height);
+}
+
+// FUNCTIONS FOR DRAWING
+
+function drawPosition(x,y){
+    canv.clearRect(0, 0, canv.width, canv.height);
+
+    canv.fillStyle = "black";
+
+    if(x != 0) canv.fillRect((canv.width-x/(520/canv.width))+20, (y-6)*0.32, 10, 10);
+}
+
+function savePosition(color, x, y, amountOfSavedElements){
+    savedPositions[amountOfSavedElements] = new Array(color, x, y);
+}
+
+function drawAllSavedPositions(){
+    for(let j = 0; j<savedPositions.length; j++){
+        canv.fillStyle = savedPositions[j][0];
+        canv.fillRect((canv.width-savedPositions[j][1]/(520/canv.width))+20, (savedPositions[j][2]/(380/canv.height))-5, 10, 10);
+    }
 }
 
 //MIDI setup
@@ -65,139 +203,43 @@ if (navigator.requestMIDIAccess) {
     function onMIDIFailure() {
         console.log('Could not access your MIDI devices.');
     }   
-    function saveSounds(){
-        sGain = myGain;
-        savedSound = currentSound;
-        savedSounds.push(savedSound);
-        //console.log(currentSound);
-        //console.log(savedSound);
-        //console.log("Saved:" + sounds[savedSound]);
-        saveGain();
-        savePositions(colorString, xCoord, yCoord, amountOfSavedPositions);
-    }
-    function revertSavedSound(){
-        savedSounds.splice((saveSounds.length-1), 1);
-    }
-    function clearSoundArray(){
-        confirm("Alles wird zurückgesetzt!");
-        while(!savedSounds.length == 0){
-            savedSounds.splice((saveSounds.length - 1), 1);
-        }
-    }
-    function saveGain(){
-    }
     function getMIDIMessage(midiMessage) {
         //console.log(midiMessage);
-        //Can be ignored
-        var startBit = midiMessage.data[0];
         //Color Value
-        var color = midiMessage.data[1];
-        //X-Coord divided by 6
-        var xCoord3 = midiMessage.data[2];
-        //Y-Coord divided by 6
-        var yCoord3 = midiMessage.data[3];
-        //Can be ignored
-        var endBit = midiMessage.data[4];
-        //X-Coord multiplied by 6
-            xCoord = (xCoord3 * 6);
-        //Y-Coord multiplied by 6
-            yCoord = (yCoord3 * 6);
+            color = midiMessage.data[1];
+        //X-Coord - mulitplied by 6 because it was divided for MIDI transmission
+            xCoord = midiMessage.data[2] * 6;
+        //Y-Coord - mulitplied by 6 because it was divided for MIDI transmission
+            yCoord = midiMessage.data[3] * 6;
 
-        //Divisor needs to be adjusted by Pixelsize of camera
-        // myGain =1 - (xCoord / 600);
 
-        function controlSounds(){
-            for (var i = 0; i<sounds.length; i++){
-                //console.log(myGain);
-                gainNodes[i].gain.value = myGain;
-            }
-        }
-        function pauseSounds(){
-            for (var i = 0; i<sounds.length; i++){
-                if(!savedSounds.includes(i)){
-                sounds[i].pause();
-                sounds[i].currentTime = 0;
-                }
-            }
-        }
-        for (var j = 0; j<15; j++){
-            var y = j*30;
-            if (yCoord > y && yCoord < y+30){
-                status = j;
-                for (var i = 0; i < sounds.length; i++){
-                    if (i == status){       
-                        sounds[i].play();
-                        sounds[i].loop = true;
-                        currentSound = i;
-                    } else if (!savedSounds.includes(i)){
-                        sounds[i].pause();
-                        sounds[i].currentTime = 0;
-                    }
-                }
-            }
-        }
-        
-        controlSounds();
-        switch(color){
-            case 0: //nichts
-                //console.log('Keine Farbe');
-                pauseSounds();
-                for(var i=0; i<sounds.length; i++){
-                    if(savedSounds.includes(i)){
-                        gainNodes[savedSound].gain.value = sGain;
-                    }
-                }
-                colorString = "";
-                break;
-            case 1: //rot
-               // console.log('rot');
-                filterNode.type = "allpass";
-                myGain =1 - (xCoord / 600);
-                colorString = "red";
-                break;
-            case 2: //blau
-                //console.log('blau');
-               // console.log(myGain);
-               //console.log("Y: " + yCoord + "   X: "+ xCoord);
-                filterNode.type = "lowpass";
-                myGain =1 - (xCoord / 600);
-                colorString = "blue";
-                break;
-            case 3: //grün
-               // console.log('grün');
-                filterNode.type = "highpass";
-                myGain =1 - (xCoord / 600);
-                colorString = "green";
-                break;
-        }
-
-    //CANVAS DRAWING
-    drawPosition(xCoord, yCoord);
-    drawAllSavedPositions();
-    console.log(savedPositions[0][0]);
-
-    
+            startPlaying();        
     }
+
 } else {
 	console.log('WebMIDI is not supported in this browser.');
 }
 
-
-function drawPosition(x,y){
-    canv.clearRect(0, 0, canv.width, canv.height);
-
-    canv.fillStyle = "black";
-    if(x != 0) canv.fillRect((canv.width-x/(520/canv.width))+20, (y/(380/canv.height))-5, 10, 10);
-}
-
-function savePositions(color, x, y, amountOfSavedPositions){
-    savedPositions[amountOfSavedPositions] = new Array(color, x, y);
-    this.amountOfSavedPositions++;
-}
-
-function drawAllSavedPositions(){
-    for(let j = 0; j<savedPositions.length; j++){
-        canv.fillStyle = savedPositions[j][0];
-        canv.fillRect((canv.width-savedPositions[j][1]/(520/canv.width))+20, (savedPositions[j][2]/(380/canv.height))-5, 10, 10);
+function startPlaying(){
+    if(!isInitialized) {
+        initialize();
     }
+
+    console.log("Can width: "+ canv.width + "   Can Height: " + canv.height);
+    // console.log("x: " + xCoord + "   y: " + yCoord);
+    // console.log("saved elemts: " + amountOfSavedElements + "   saved positions: " + savedPositions.length);
+    if(gainNodes.length > 1){
+        console.log("saved Gain: " + gainNodes[0].gain.value);
+        console.log("current gain: " + currentGain);
+
+    }
+
+        playSound();
+
+        setGain();
+    
+        setFilterType();
+    
+        drawPosition(xCoord, yCoord);
+        drawAllSavedPositions();
 }
