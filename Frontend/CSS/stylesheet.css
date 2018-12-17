@@ -8,6 +8,7 @@ body {
 #buttons {
     float: right;
     width: 10%;
+    padding-left: 5%
 }
 .button{
     background-color: #4CAF50;
@@ -41,7 +42,7 @@ body {
 }
 #video{
     margin-left: 12%;
-    width: 70%;
+    width: 90%;
 }
 
 #instrument{
@@ -52,9 +53,9 @@ body {
 }
 #lautstaerke{
     height: 50px;
-    bottom: 0;
     text-orientation: upright; 
     font-size: 250%;
     margin-top: 29%;
-    padding-left: 41%; 
+    padding-left: 32%; 
+    letter-spacing: 40px;
 }
