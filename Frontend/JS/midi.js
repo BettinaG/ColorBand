@@ -27,6 +27,14 @@ var status,
     savedSound,
     savedSounds = new Array ();
 
+
+    
+var savedPositions = new Array(),
+    amountOfSavedPositions = 0,
+    colorString,
+    xCoord,
+    yCoord;
+
 var e = document.getElementById("meinRechteckCanvas"),
     canv = e.getContext("2d");
 
@@ -61,10 +69,11 @@ if (navigator.requestMIDIAccess) {
         sGain = myGain;
         savedSound = currentSound;
         savedSounds.push(savedSound);
-        console.log(currentSound);
-        console.log(savedSound);
-        console.log("Saved:" + sounds[savedSound]);
+        //console.log(currentSound);
+        //console.log(savedSound);
+        //console.log("Saved:" + sounds[savedSound]);
         saveGain();
+        savePositions(colorString, xCoord, yCoord, amountOfSavedPositions);
     }
     function revertSavedSound(){
         savedSounds.splice((saveSounds.length-1), 1);
@@ -90,9 +99,9 @@ if (navigator.requestMIDIAccess) {
         //Can be ignored
         var endBit = midiMessage.data[4];
         //X-Coord multiplied by 6
-        var xCoord = (xCoord3 * 6);
+            xCoord = (xCoord3 * 6);
         //Y-Coord multiplied by 6
-        var yCoord = (yCoord3 * 6);
+            yCoord = (yCoord3 * 6);
 
         //Divisor needs to be adjusted by Pixelsize of camera
         // myGain =1 - (xCoord / 600);
@@ -138,11 +147,13 @@ if (navigator.requestMIDIAccess) {
                         gainNodes[savedSound].gain.value = sGain;
                     }
                 }
+                colorString = "";
                 break;
             case 1: //rot
                // console.log('rot');
                 filterNode.type = "allpass";
                 myGain =1 - (xCoord / 600);
+                colorString = "red";
                 break;
             case 2: //blau
                 //console.log('blau');
@@ -150,17 +161,21 @@ if (navigator.requestMIDIAccess) {
                //console.log("Y: " + yCoord + "   X: "+ xCoord);
                 filterNode.type = "lowpass";
                 myGain =1 - (xCoord / 600);
+                colorString = "blue";
                 break;
             case 3: //grün
                // console.log('grün');
                 filterNode.type = "highpass";
                 myGain =1 - (xCoord / 600);
+                colorString = "green";
                 break;
         }
 
     //CANVAS DRAWING
     drawPosition(xCoord, yCoord);
-   
+    drawAllSavedPositions();
+    console.log(savedPositions[0][0]);
+
     
     }
 } else {
@@ -173,4 +188,16 @@ function drawPosition(x,y){
 
     canv.fillStyle = "black";
     if(x != 0) canv.fillRect((canv.width-x/(520/canv.width))+20, (y/(380/canv.height))-5, 10, 10);
+}
+
+function savePositions(color, x, y, amountOfSavedPositions){
+    savedPositions[amountOfSavedPositions] = new Array(color, x, y);
+    this.amountOfSavedPositions++;
+}
+
+function drawAllSavedPositions(){
+    for(let j = 0; j<savedPositions.length; j++){
+        canv.fillStyle = savedPositions[j][0];
+        canv.fillRect((canv.width-savedPositions[j][1]/(520/canv.width))+20, (savedPositions[j][2]/(380/canv.height))-5, 10, 10);
+    }
 }
