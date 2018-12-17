@@ -107,11 +107,6 @@ function setFilterType(){
     switch(color){
         case 0: //nichts
             //console.log('Keine Farbe');
-            for(var i=0; i<sounds.length; i++){
-                if(savedSounds.includes(i)){
-                    gainNodes[savedSounds[amountOfSavedElements]].gain.value = gainNodes[amountOfSavedElements].gain.value;
-                }
-}
             pauseSounds();
             colorString = "";
             break;
@@ -174,7 +169,7 @@ function drawPosition(x,y){
 
     canv.fillStyle = "black";
 
-    if(x != 0) canv.fillRect((canv.width-x/(520/canv.width))+20, (y-6)*0.32, 10, 10);
+    if(x > 6 && y > 6) canv.fillRect((canv.width-x/(520/canv.width))+20, (y-6)*0.32, 10, 10);
 }
 
 function savePosition(color, x, y, amountOfSavedElements){
@@ -184,7 +179,7 @@ function savePosition(color, x, y, amountOfSavedElements){
 function drawAllSavedPositions(){
     for(let j = 0; j<savedPositions.length; j++){
         canv.fillStyle = savedPositions[j][0];
-        canv.fillRect((canv.width-savedPositions[j][1]/(520/canv.width))+20, (savedPositions[j][2]/(380/canv.height))-5, 10, 10);
+        canv.fillRect((canv.width-savedPositions[j][1]/(520/canv.width))+20, (savedPositions[j][2]-6)*0.32, 10, 10);
     }
 }
 
@@ -225,7 +220,7 @@ function startPlaying(){
         initialize();
     }
 
-    console.log("Can width: "+ canv.width + "   Can Height: " + canv.height);
+    // console.log("Can width: "+ canv.width + "   Can Height: " + canv.height);
     // console.log("x: " + xCoord + "   y: " + yCoord);
     // console.log("saved elemts: " + amountOfSavedElements + "   saved positions: " + savedPositions.length);
     if(gainNodes.length > 1){
@@ -242,4 +237,5 @@ function startPlaying(){
     
         drawPosition(xCoord, yCoord);
         drawAllSavedPositions();
+        if(gainNodes.length > 1) currentGain = gainNodes[amountOfSavedElements-1].gain.value;
 }
