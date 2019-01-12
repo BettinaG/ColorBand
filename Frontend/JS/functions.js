@@ -129,6 +129,10 @@ function revertSavedSound(){
  *  clearSoundArray - deletes all saved sound
  */
 function clearSoundArray(){
+    for(let i = 0; i < soundNodes.length; i++){
+        soundNodes[i].disconnect();
+    }
+
     while(!savedSounds.length == 0){
         savedSounds.splice((saveSounds.length - 1), 1);
         gainNodes.splice((gainNodes.length - 1), 1);
